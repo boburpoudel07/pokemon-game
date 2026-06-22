@@ -8,7 +8,39 @@
 </head>
 <body>
 
-<button id="skipBtn" class="skip-btn">⏭ Skip Stage</button>
+<!-- GAME LOGIN GATE -->
+<div class="gate-overlay" id="gateOverlay">
+  <div class="gate-card">
+    <div class="gate-logo">🥄</div>
+    <div class="gate-title">Pokémon Spoon Eater</div>
+    <div class="gate-sub">Enter PIN to play</div>
+    <form id="gateForm" autocomplete="off">
+      <input type="password" class="gate-input" id="gateInput" placeholder="· · · ·" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="gate-error" id="gateError"></div>
+      <button type="submit" class="gate-submit">Let's Play! 🎮</button>
+    </form>
+  </div>
+</div>
+
+<!-- PIN MODAL -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-card">
+    <button class="pin-close" id="pinClose" type="button">✕</button>
+    <div class="pin-logo">🔐</div>
+    <div class="pin-title">Cheat Mode</div>
+    <div class="pin-sub">Enter PIN to unlock skip evolution</div>
+    <form id="pinForm" autocomplete="off">
+      <input type="password" class="pin-input" id="pinInput" placeholder="· · · ·" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="pin-error" id="pinError"></div>
+      <button type="submit" class="pin-submit">Unlock ✨</button>
+    </form>
+  </div>
+</div>
+
+<!-- LOCK BUTTON (top right) -->
+<button class="lock-btn" id="lockBtn" title="Unlock cheat mode">🔒</button>
+
+<button id="skipBtn" class="skip-btn" style="display:none">⏭ Skip Stage</button>
 
 <div class="game-title">🥄 Pokémon Spoon Eater! 🥄</div>
 
@@ -90,11 +122,90 @@
 
 <!-- game logic first, then camera (camera calls window.eatSpoon) -->
 <script>
+  // GAME LOGIN GATE
+  (function () {
+    const SECRET = '6767';
+    const overlay = document.getElementById('gateOverlay');
+    const form    = document.getElementById('gateForm');
+    const input   = document.getElementById('gateInput');
+    const error   = document.getElementById('gateError');
+
+    setTimeout(() => input.focus(), 80);
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if (input.value === SECRET) {
+        overlay.classList.add('gate-out');
+        overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+      } else {
+        error.textContent = 'Wrong PIN! Try again.';
+        input.value = '';
+        input.classList.add('gate-shake');
+        input.addEventListener('animationend', () => input.classList.remove('gate-shake'), { once: true });
+      }
+    });
+  })();
+
   document.getElementById('camMinBtn').addEventListener('click', () => {
     const panel = document.getElementById('camPanel');
     const minimized = panel.classList.toggle('cam-panel--minimized');
     document.getElementById('camMinBtn').textContent = minimized ? '+' : '−';
   });
+
+  (function () {
+    const SECRET     = '6767';
+    const pinOverlay = document.getElementById('pinOverlay');
+    const pinForm    = document.getElementById('pinForm');
+    const pinInput   = document.getElementById('pinInput');
+    const pinError   = document.getElementById('pinError');
+    const pinClose   = document.getElementById('pinClose');
+    const lockBtn    = document.getElementById('lockBtn');
+    const skipBtn    = document.getElementById('skipBtn');
+    let unlocked = false;
+
+    function openModal() {
+      pinInput.value = '';
+      pinError.textContent = '';
+      skipBtn.style.display = 'none';
+      pinOverlay.classList.add('show');
+      setTimeout(() => pinInput.focus(), 50);
+    }
+
+    function closeModal() {
+      pinOverlay.classList.remove('show');
+    }
+
+    function setLocked(state) {
+      unlocked = !state;
+      lockBtn.textContent   = state ? '🔒' : '🔓';
+      lockBtn.title         = state ? 'Unlock cheat mode' : 'Lock cheat mode';
+      skipBtn.style.display = state ? 'none' : '';
+    }
+
+
+    lockBtn.addEventListener('click', () => {
+      if (unlocked) {
+        setLocked(true);
+      } else {
+        openModal();
+      }
+    });
+
+    pinForm.addEventListener('submit', e => {
+      e.preventDefault();
+      if (pinInput.value === SECRET) {
+        setLocked(false);
+        closeModal();
+      } else {
+        pinError.textContent = 'Wrong PIN!';
+        pinInput.value = '';
+        pinInput.classList.add('pin-shake');
+        pinInput.addEventListener('animationend', () => pinInput.classList.remove('pin-shake'), { once: true });
+      }
+    });
+
+    pinClose.addEventListener('click', closeModal);
+  })();
 </script>
 <script src="game.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>

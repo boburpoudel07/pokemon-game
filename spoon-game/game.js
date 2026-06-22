@@ -320,12 +320,12 @@ window.skipStage = function skipStage() {
 
 /* ── INPUT (spacebar fallback) ── */
 document.addEventListener('keydown', e => {
-  if ((e.code === 'Space' || e.key === ' ') && !winOverlay.classList.contains('show')) {
+  if ((e.code === 'Space' || e.key === ' ') && !winOverlay.classList.contains('show') && !document.getElementById('pinOverlay').classList.contains('show') && !document.getElementById('gateOverlay')) {
     e.preventDefault(); window.eatSpoon();
   }
 });
 document.addEventListener('click', e => {
-  if (!winOverlay.classList.contains('show') && !e.target.closest('#restartBtn') && !e.target.closest('#camPanel') && !e.target.closest('#breakBtn') && !e.target.closest('#skipBtn')) {
+  if (!winOverlay.classList.contains('show') && !e.target.closest('#restartBtn') && !e.target.closest('#camPanel') && !e.target.closest('#breakBtn') && !e.target.closest('#skipBtn') && !e.target.closest('#pinOverlay') && !e.target.closest('#lockBtn') && !e.target.closest('#gateOverlay')) {
     window.eatSpoon();
   }
 });
