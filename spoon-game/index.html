@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥄 Pokémon Spoon Eater!</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<button id="skipBtn" class="skip-btn">⏭ Skip Stage</button>
+
+<div class="game-title">🥄 Pokémon Spoon Eater! 🥄</div>
+
+<div class="evo-row">
+  <div class="evo-name" id="evoName">Magikarp</div>
+  <div class="type-badge" id="typeBadge" style="--type-color:#6890F0">Water</div>
+</div>
+
+<div class="counter">
+  <span>🥄</span><span class="counter-number" id="counterNum">0</span><span>spoons!</span>
+</div>
+
+<div class="timer-wrap" id="timerWrap">
+  <span class="timer-icon">⏱</span>
+  <span class="timer-num" id="timerNum">90</span>
+  <div class="timer-track">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+  <button class="break-btn" id="breakBtn">⏸ Break</button>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-outer">
+    <div class="progress-inner" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">5 more spoons to get Squirtle!</div>
+</div>
+
+<!-- POKÉMON SCENE -->
+<div class="scene" id="scene">
+  <!-- Charge ring sits outside the disc as a conic-gradient layer -->
+  <div class="charge-ring-wrap">
+    <div class="charge-ring" id="chargeRing" style="--charge:0"></div>
+    <div class="poke-disc" id="pokeDisc">
+      <img class="poke-img" id="pokeImg"
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/129.png"
+        alt="Magikarp">
+    </div>
+  </div>
+</div>
+
+<div class="instructions">⬇️ Spacebar or show an open palm to the camera! ⬇️</div>
+
+<!-- Evolution overlays -->
+<div class="evo-flash" id="evoFlash"></div>
+<div class="evo-msg"   id="evoMsg"></div>
+
+<!-- CAMERA PANEL -->
+<div class="cam-panel" id="camPanel">
+  <div class="cam-header">
+    <span class="cam-title">📷 Palm Detector</span>
+    <button class="cam-toggle-btn" id="camBtn">Enable</button>
+  </div>
+  <div class="cam-feed-wrap" id="camFeedWrap" style="display:none">
+    <video class="cam-video"  id="camVideo"  autoplay playsinline muted></video>
+    <canvas class="cam-canvas" id="camCanvas"></canvas>
+    <div class="cam-detect-flash" id="camFlash"></div>
+    <div class="cam-charge-bar-wrap">
+      <div class="cam-charge-bar" id="camChargeBar"></div>
+    </div>
+  </div>
+  <div class="cam-status">
+    <div class="cam-dot idle" id="camDot"></div>
+    <span id="camStatusText">Camera off — click Enable to start</span>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div class="win-overlay" id="winOverlay">
+  <div class="win-trophy">🏆</div>
+  <div class="win-title">Pokémon Master!</div>
+  <div class="win-pokes" id="winPokes"></div>
+  <div class="win-sub">100 spoons — Dragon Master! 🐉👑</div>
+  <button class="restart-btn" id="restartBtn">Play Again! 🥄</button>
+</div>
+
+<!-- game logic first, then camera (camera calls window.eatSpoon) -->
+<script src="game.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="camera.js"></script>
+</body>
+</html>
