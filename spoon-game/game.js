@@ -46,26 +46,26 @@ const playWin = () => {
 
 /* ── POKÉMON DATA ── */
 const BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/';
-/* Three dragon evolution lines: Dratini → Bagon → Gible */
+/* Starters → rare pseudo-legendaries: Bulbasaur → Charmander → Squirtle → Larvitar → Deino */
 const EVOS = [
-  /* ── Dratini line ── */
-  { name: 'Dratini',   type: 'Dragon', color: '#6F35FC', glow: 'rgba(111,53,252,.55)',  at: 0,  id: 147, bg: ['#d8e8ff', '#80b0e8'] },
-  { name: 'Dragonair', type: 'Dragon', color: '#6F35FC', glow: 'rgba(80,130,220,.65)',  at: 12, id: 148, bg: ['#b8d8f8', '#5090d0'] },
-  { name: 'Dragonite', type: 'Dragon', color: '#6F35FC', glow: 'rgba(220,160,40,.65)',  at: 25, id: 149, bg: ['#fff0b8', '#e0a820'] },
-  /* ── Bagon line ── */
-  { name: 'Bagon',     type: 'Dragon', color: '#6F35FC', glow: 'rgba(100,110,160,.65)', at: 37, id: 371, bg: ['#d0d8f0', '#6070a8'] },
-  { name: 'Shelgon',   type: 'Dragon', color: '#6F35FC', glow: 'rgba(140,140,150,.65)', at: 50, id: 372, bg: ['#e0e0e8', '#909098'] },
-  { name: 'Salamence', type: 'Dragon', color: '#6F35FC', glow: 'rgba(40,80,200,.65)',   at: 63, id: 373, bg: ['#b0c8f8', '#2858c0'] },
-  /* ── Gible line ── */
-  { name: 'Gible',     type: 'Dragon', color: '#6F35FC', glow: 'rgba(90,70,160,.65)',   at: 73, id: 443, bg: ['#d0c8f0', '#5848a8'] },
-  { name: 'Gabite',    type: 'Dragon', color: '#6F35FC', glow: 'rgba(60,90,170,.65)',   at: 83, id: 444, bg: ['#b8c8f8', '#3858b0'] },
-  { name: 'Garchomp',  type: 'Dragon', color: '#6F35FC', glow: 'rgba(30,50,150,.65)',   at: 92, id: 445, bg: ['#98b0f0', '#1838a0'] },
-  /* ── Ghost line ── */
-  { name: 'Gastly',    type: 'Ghost',  color: '#735797', glow: 'rgba(115,87,151,.65)', at: 100, id: 92,  bg: ['#d8c8f0', '#8060b0'] },
-  { name: 'Haunter',   type: 'Ghost',  color: '#735797', glow: 'rgba(95,65,135,.65)',  at: 110, id: 93,  bg: ['#c8b8e8', '#6048a0'] },
-  { name: 'Gengar',    type: 'Ghost',  color: '#735797', glow: 'rgba(80,50,120,.65)',  at: 120, id: 94,  bg: ['#b8a8e0', '#503890'] },
-  { name: 'Misdreavus',type: 'Ghost',  color: '#735797', glow: 'rgba(130,80,150,.65)', at: 130, id: 200, bg: ['#e0c8f0', '#9060b8'] },
-  { name: 'Mismagius', type: 'Ghost',  color: '#735797', glow: 'rgba(150,50,180,.65)', at: 140, id: 429, bg: ['#e8b0f8', '#a030d0'] },
+  /* ── Bulbasaur line ── */
+  { name: 'Bulbasaur',  type: 'Grass',  color: '#78C850', glow: 'rgba(120,200,80,.55)',  at: 0,   id: 1,   bg: ['#cff0c8', '#88d060'] },
+  { name: 'Ivysaur',    type: 'Grass',  color: '#58A830', glow: 'rgba(88,168,48,.65)',   at: 12,  id: 2,   bg: ['#b0e0a0', '#60b040'] },
+  { name: 'Venusaur',   type: 'Grass',  color: '#3A7820', glow: 'rgba(58,120,32,.65)',   at: 25,  id: 3,   bg: ['#90c878', '#409028'] },
+  /* ── Charmander line ── */
+  { name: 'Charmander', type: 'Fire',   color: '#F08030', glow: 'rgba(240,128,48,.55)',  at: 37,  id: 4,   bg: ['#ffe0b8', '#f09040'] },
+  { name: 'Charmeleon', type: 'Fire',   color: '#D05018', glow: 'rgba(208,80,24,.65)',   at: 50,  id: 5,   bg: ['#ffc898', '#e07020'] },
+  { name: 'Charizard',  type: 'Fire',   color: '#A03010', glow: 'rgba(200,60,20,.70)',   at: 63,  id: 6,   bg: ['#ffb080', '#c84010'] },
+  /* ── Squirtle line ── */
+  { name: 'Squirtle',   type: 'Water',  color: '#6890F0', glow: 'rgba(104,144,240,.55)', at: 73,  id: 7,   bg: ['#c8e0ff', '#70a8f8'] },
+  { name: 'Wartortle',  type: 'Water',  color: '#3860D0', glow: 'rgba(56,96,208,.65)',   at: 83,  id: 8,   bg: ['#a8c8f8', '#4880e0'] },
+  { name: 'Blastoise',  type: 'Water',  color: '#1840A8', glow: 'rgba(24,64,168,.65)',   at: 92,  id: 9,   bg: ['#80b0f0', '#2060c8'] },
+  /* ── Larvitar line → Deino line (rare, complex) ── */
+  { name: 'Larvitar',   type: 'Rock',   color: '#B8A038', glow: 'rgba(184,160,56,.65)',  at: 100, id: 246, bg: ['#e8dca0', '#c0a840'] },
+  { name: 'Pupitar',    type: 'Rock',   color: '#708080', glow: 'rgba(112,128,128,.65)', at: 110, id: 247, bg: ['#c8d0d0', '#7898a0'] },
+  { name: 'Tyranitar',  type: 'Dark',   color: '#2E6040', glow: 'rgba(40,90,50,.70)',    at: 120, id: 248, bg: ['#90b898', '#306848'] },
+  { name: 'Deino',      type: 'Dark',   color: '#5830A8', glow: 'rgba(88,48,168,.65)',   at: 130, id: 633, bg: ['#c8b0e8', '#7050b8'] },
+  { name: 'Hydreigon',  type: 'Dragon', color: '#1010A0', glow: 'rgba(20,10,160,.80)',   at: 140, id: 635, bg: ['#7868c0', '#181898'] },
 ];
 
 // Preload all images
