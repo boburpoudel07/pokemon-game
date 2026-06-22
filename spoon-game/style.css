@@ -277,6 +277,16 @@ body {
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .cam-title { font-size:.88rem; color:white; font-weight:bold; }
+.cam-header-btns { display:flex; align-items:center; gap:6px; }
+.cam-minimize-btn {
+  font-size:.88rem; font-family:inherit; font-weight:bold; line-height:1;
+  width:24px; height:24px; border-radius:8px; border:none; cursor:pointer;
+  background:rgba(255,255,255,.15); color:white; transition:background .2s;
+  display:flex; align-items:center; justify-content:center;
+}
+.cam-minimize-btn:hover { background:rgba(255,255,255,.3); }
+.cam-panel--minimized .cam-feed-wrap,
+.cam-panel--minimized .cam-status { display:none !important; }
 .cam-toggle-btn {
   font-size:.78rem; font-family:inherit; font-weight:bold;
   padding:4px 11px; border-radius:10px; border:none; cursor:pointer;

@@ -60,7 +60,10 @@
 <div class="cam-panel" id="camPanel">
   <div class="cam-header">
     <span class="cam-title">📷 Palm Detector</span>
-    <button class="cam-toggle-btn" id="camBtn">Enable</button>
+    <div class="cam-header-btns">
+      <button class="cam-minimize-btn" id="camMinBtn" title="Minimize">−</button>
+      <button class="cam-toggle-btn" id="camBtn">Enable</button>
+    </div>
   </div>
   <div class="cam-feed-wrap" id="camFeedWrap" style="display:none">
     <video class="cam-video"  id="camVideo"  autoplay playsinline muted></video>
@@ -86,6 +89,13 @@
 </div>
 
 <!-- game logic first, then camera (camera calls window.eatSpoon) -->
+<script>
+  document.getElementById('camMinBtn').addEventListener('click', () => {
+    const panel = document.getElementById('camPanel');
+    const minimized = panel.classList.toggle('cam-panel--minimized');
+    document.getElementById('camMinBtn').textContent = minimized ? '+' : '−';
+  });
+</script>
 <script src="game.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 <script src="camera.js"></script>

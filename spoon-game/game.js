@@ -50,22 +50,22 @@ const BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/p
 const EVOS = [
   /* ── Bulbasaur line ── */
   { name: 'Bulbasaur',  type: 'Grass',  color: '#78C850', glow: 'rgba(120,200,80,.55)',  at: 0,   id: 1,   bg: ['#cff0c8', '#88d060'] },
-  { name: 'Ivysaur',    type: 'Grass',  color: '#58A830', glow: 'rgba(88,168,48,.65)',   at: 12,  id: 2,   bg: ['#b0e0a0', '#60b040'] },
-  { name: 'Venusaur',   type: 'Grass',  color: '#3A7820', glow: 'rgba(58,120,32,.65)',   at: 25,  id: 3,   bg: ['#90c878', '#409028'] },
+  { name: 'Ivysaur',    type: 'Grass',  color: '#58A830', glow: 'rgba(88,168,48,.65)',   at: 10,  id: 2,   bg: ['#b0e0a0', '#60b040'] },
+  { name: 'Venusaur',   type: 'Grass',  color: '#3A7820', glow: 'rgba(58,120,32,.65)',   at: 20,  id: 3,   bg: ['#90c878', '#409028'] },
   /* ── Charmander line ── */
-  { name: 'Charmander', type: 'Fire',   color: '#F08030', glow: 'rgba(240,128,48,.55)',  at: 37,  id: 4,   bg: ['#ffe0b8', '#f09040'] },
-  { name: 'Charmeleon', type: 'Fire',   color: '#D05018', glow: 'rgba(208,80,24,.65)',   at: 50,  id: 5,   bg: ['#ffc898', '#e07020'] },
-  { name: 'Charizard',  type: 'Fire',   color: '#A03010', glow: 'rgba(200,60,20,.70)',   at: 63,  id: 6,   bg: ['#ffb080', '#c84010'] },
+  { name: 'Charmander', type: 'Fire',   color: '#F08030', glow: 'rgba(240,128,48,.55)',  at: 30,  id: 4,   bg: ['#ffe0b8', '#f09040'] },
+  { name: 'Charmeleon', type: 'Fire',   color: '#D05018', glow: 'rgba(208,80,24,.65)',   at: 40,  id: 5,   bg: ['#ffc898', '#e07020'] },
+  { name: 'Charizard',  type: 'Fire',   color: '#A03010', glow: 'rgba(200,60,20,.70)',   at: 50,  id: 6,   bg: ['#ffb080', '#c84010'] },
   /* ── Squirtle line ── */
-  { name: 'Squirtle',   type: 'Water',  color: '#6890F0', glow: 'rgba(104,144,240,.55)', at: 73,  id: 7,   bg: ['#c8e0ff', '#70a8f8'] },
-  { name: 'Wartortle',  type: 'Water',  color: '#3860D0', glow: 'rgba(56,96,208,.65)',   at: 83,  id: 8,   bg: ['#a8c8f8', '#4880e0'] },
-  { name: 'Blastoise',  type: 'Water',  color: '#1840A8', glow: 'rgba(24,64,168,.65)',   at: 92,  id: 9,   bg: ['#80b0f0', '#2060c8'] },
+  { name: 'Squirtle',   type: 'Water',  color: '#6890F0', glow: 'rgba(104,144,240,.55)', at: 60,  id: 7,   bg: ['#c8e0ff', '#70a8f8'] },
+  { name: 'Wartortle',  type: 'Water',  color: '#3860D0', glow: 'rgba(56,96,208,.65)',   at: 70,  id: 8,   bg: ['#a8c8f8', '#4880e0'] },
+  { name: 'Blastoise',  type: 'Water',  color: '#1840A8', glow: 'rgba(24,64,168,.65)',   at: 80,  id: 9,   bg: ['#80b0f0', '#2060c8'] },
   /* ── Larvitar line → Deino line (rare, complex) ── */
-  { name: 'Larvitar',   type: 'Rock',   color: '#B8A038', glow: 'rgba(184,160,56,.65)',  at: 100, id: 246, bg: ['#e8dca0', '#c0a840'] },
-  { name: 'Pupitar',    type: 'Rock',   color: '#708080', glow: 'rgba(112,128,128,.65)', at: 110, id: 247, bg: ['#c8d0d0', '#7898a0'] },
-  { name: 'Tyranitar',  type: 'Dark',   color: '#2E6040', glow: 'rgba(40,90,50,.70)',    at: 120, id: 248, bg: ['#90b898', '#306848'] },
-  { name: 'Deino',      type: 'Dark',   color: '#5830A8', glow: 'rgba(88,48,168,.65)',   at: 130, id: 633, bg: ['#c8b0e8', '#7050b8'] },
-  { name: 'Hydreigon',  type: 'Dragon', color: '#1010A0', glow: 'rgba(20,10,160,.80)',   at: 140, id: 635, bg: ['#7868c0', '#181898'] },
+  { name: 'Larvitar',   type: 'Rock',   color: '#B8A038', glow: 'rgba(184,160,56,.65)',  at: 90,  id: 246, bg: ['#e8dca0', '#c0a840'] },
+  { name: 'Pupitar',    type: 'Rock',   color: '#708080', glow: 'rgba(112,128,128,.65)', at: 100, id: 247, bg: ['#c8d0d0', '#7898a0'] },
+  { name: 'Tyranitar',  type: 'Dark',   color: '#2E6040', glow: 'rgba(40,90,50,.70)',    at: 110, id: 248, bg: ['#90b898', '#306848'] },
+  { name: 'Deino',      type: 'Dark',   color: '#5830A8', glow: 'rgba(88,48,168,.65)',   at: 120, id: 633, bg: ['#c8b0e8', '#7050b8'] },
+  { name: 'Hydreigon',  type: 'Dragon', color: '#1010A0', glow: 'rgba(20,10,160,.80)',   at: 130, id: 635, bg: ['#7868c0', '#181898'] },
 ];
 
 // Preload all images
@@ -138,6 +138,17 @@ function applyTimerPenalty() {
   counterNum.classList.remove('bump'); void counterNum.offsetWidth; counterNum.classList.add('bump');
   timerNumEl.classList.remove('penalty-flash'); void timerNumEl.offsetWidth; timerNumEl.classList.add('penalty-flash');
   penaltyPopup();
+
+  let newIdx = 0;
+  for (let i = 0; i < EVOS.length; i++) { if (count >= EVOS[i].at) newIdx = i; }
+  if (newIdx < evoIdx) {
+    evoIdx = newIdx;
+    applyEvo(EVOS[evoIdx]);
+    evoMsg.textContent = `Oh no! Devolved back to ${EVOS[evoIdx].name}! 😱`;
+    evoMsg.classList.add('show');
+    setTimeout(() => evoMsg.classList.remove('show'), 2800);
+  }
+
   updateUI();
   resetTimer();
 }
@@ -242,7 +253,7 @@ window.eatSpoon = function eatSpoon() {
 
   updateUI();
 
-  if (count >= 150) {
+  if (count >= 140) {
     const delay = evolving ? 4000 : 1200;
     setTimeout(() => {
       winPokes.innerHTML = '';
@@ -289,8 +300,8 @@ window.skipStage = function skipStage() {
     eating = false;
     triggerEvolution(evoIdx);
     updateUI();
-  } else if (count < 150) {
-    count = 150;
+  } else if (count < 140) {
+    count = 140;
     counterNum.textContent = count;
     updateUI();
     setTimeout(() => {

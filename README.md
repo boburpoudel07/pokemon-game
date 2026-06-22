@@ -1,15 +1,14 @@
 # 🥄 Pokémon Spoon Eater
 
-A browser-based Pokémon clicker game where you feed spoons to Pokémon and watch them evolve through three full evolution lines — plus a secret Ghost-type line!
-
+A browser-based Pokémon clicker game where you feed spoons to Pokémon and watch them evolve — starting with the classic Gen 1 starters and escalating to rare pseudo-legendaries!
 
 ## How to Play
 
 - **Click anywhere** or press **Spacebar** to feed a spoon
 - **Camera mode**: enable the palm detector and hold an open hand up to your webcam to trigger spoon-eating automatically
-- Reach spoon milestones to evolve your Pokémon through 14 stages across 4 evolution lines
-- A **90-second timer** resets on every bite — let it expire and lose 2 spoons!
-- Hit **150 spoons** to become a Pokémon Master 🏆
+- Every 10 spoons triggers an evolution across 14 stages and 4 lines
+- A **90-second timer** resets on every bite — let it expire and lose 2 spoons (and possibly devolve!)
+- Hit **140 spoons** to become a Pokémon Master 🏆
 
 ## Controls
 
@@ -19,15 +18,20 @@ A browser-based Pokémon clicker game where you feed spoons to Pokémon and watc
 | Open palm detection | Enable camera → show ✋ |
 | Skip to next evolution | ⏭ Skip Stage button |
 | Pause the timer | ⏸ Break button |
+| Minimize camera panel | − button on the camera panel |
 
 ## Evolution Lines
 
-| Line | Pokémon | Starts at |
+| Line | Pokémon | Spoon threshold |
 |---|---|---|
-| Dragon | Dratini → Dragonair → Dragonite | 0 spoons |
-| Dragon | Bagon → Shelgon → Salamence | 37 spoons |
-| Dragon | Gible → Gabite → Garchomp | 73 spoons |
-| Ghost | Gastly → Haunter → Gengar → Misdreavus → Mismagius | 100 spoons |
+| Grass | Bulbasaur → Ivysaur → Venusaur | 0 / 10 / 20 |
+| Fire | Charmander → Charmeleon → Charizard | 30 / 40 / 50 |
+| Water | Squirtle → Wartortle → Blastoise | 60 / 70 / 80 |
+| Rare | Larvitar → Pupitar → Tyranitar → Deino → Hydreigon | 90 / 100 / 110 / 120 / 130 |
+
+## Penalty & Demotion
+
+When the 90-second timer expires, you lose 2 spoons. If that drop pushes you below your current evolution's threshold, you **devolve** back to the previous stage automatically.
 
 ## Running Locally
 
