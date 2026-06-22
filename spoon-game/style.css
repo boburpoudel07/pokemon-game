@@ -50,39 +50,41 @@ body {
   text-align:center; margin-bottom:6px;
 }
 
-#gateForm { width:100%; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.gate-mic-btn {
+  width:84px; height:84px; border-radius:50%; border:none; cursor:pointer;
+  font-size:2.2rem; margin:8px 0;
+  background:linear-gradient(135deg,#4d96ff,#c77dff);
+  color:white; box-shadow:0 8px 28px rgba(77,150,255,.5);
+  transition:transform .15s, box-shadow .15s;
+  display:flex; align-items:center; justify-content:center;
+}
+.gate-mic-btn:hover { transform:scale(1.07); box-shadow:0 12px 32px rgba(77,150,255,.65); }
+.gate-mic-btn:active { transform:scale(.94); }
+.gate-mic-btn.listening {
+  animation:gate-mic-pulse 1s ease-in-out infinite;
+  box-shadow:0 0 0 0 rgba(77,150,255,.7);
+}
+@keyframes gate-mic-pulse {
+  0%   { box-shadow:0 0 0 0 rgba(77,150,255,.7); }
+  70%  { box-shadow:0 0 0 18px rgba(77,150,255,0); }
+  100% { box-shadow:0 0 0 0 rgba(77,150,255,0); }
+}
 
-.gate-input {
-  width:100%; padding:14px 18px; border-radius:14px;
-  border:2px solid rgba(255,255,255,.18);
-  background:rgba(255,255,255,.08); color:white;
-  font-size:1.6rem; font-family:inherit;
-  text-align:center; letter-spacing:.4em;
-  outline:none; transition:border-color .2s, box-shadow .2s;
+.gate-transcript {
+  width:100%; min-height:3.2em;
+  background:rgba(255,255,255,.07); border-radius:14px;
+  border:2px solid rgba(255,255,255,.12);
+  padding:12px 16px; color:white;
+  font-size:1rem; font-family:inherit;
+  text-align:center; line-height:1.5;
+  word-break:break-word;
 }
-.gate-input::placeholder { font-size:1.1rem; letter-spacing:.2em; color:rgba(255,255,255,.22); }
-.gate-input:focus { border-color:rgba(77,150,255,.7); box-shadow:0 0 0 3px rgba(77,150,255,.2); }
-.gate-input.gate-shake { animation:gate-shake .4s ease; }
-@keyframes gate-shake {
-  0%,100%{transform:translateX(0)}
-  20%{transform:translateX(-9px)} 40%{transform:translateX(9px)}
-  60%{transform:translateX(-6px)} 80%{transform:translateX(6px)}
-}
+.gate-transcript .interim { color:rgba(255,255,255,.45); }
 
 .gate-error {
   min-height:1em; font-size:.85rem; color:#ff6b6b;
   font-weight:bold; text-align:center;
 }
-
-.gate-submit {
-  width:100%; padding:14px; border-radius:14px; border:none; cursor:pointer;
-  font-size:1.05rem; font-family:inherit; font-weight:900;
-  background:linear-gradient(135deg,#4d96ff,#c77dff);
-  color:white; box-shadow:0 8px 24px rgba(77,150,255,.4);
-  transition:transform .15s, box-shadow .15s; margin-top:4px;
-}
-.gate-submit:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(77,150,255,.55); }
-.gate-submit:active { transform:scale(.97); }
 
 /* ==============================
    LOCK BUTTON

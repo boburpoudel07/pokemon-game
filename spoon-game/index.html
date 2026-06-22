@@ -13,12 +13,10 @@
   <div class="gate-card">
     <div class="gate-logo">🥄</div>
     <div class="gate-title">Pokémon Spoon Eater</div>
-    <div class="gate-sub">Enter PIN to play</div>
-    <form id="gateForm" autocomplete="off">
-      <input type="password" class="gate-input" id="gateInput" placeholder="· · · ·" maxlength="6" inputmode="numeric" pattern="[0-9]*">
-      <div class="gate-error" id="gateError"></div>
-      <button type="submit" class="gate-submit">Let's Play! 🎮</button>
-    </form>
+    <div class="gate-sub" id="gateSub">Tap the mic to identify yourself</div>
+    <button class="gate-mic-btn" id="gateMicBtn">🎤</button>
+    <div class="gate-transcript" id="gateTranscript"></div>
+    <div class="gate-error" id="gateError"></div>
   </div>
 </div>
 
@@ -122,27 +120,88 @@
 
 <!-- game logic first, then camera (camera calls window.eatSpoon) -->
 <script>
-  // GAME LOGIN GATE
+  // GAME LOGIN GATE — voice auth
   (function () {
-    const SECRET = '6767';
-    const overlay = document.getElementById('gateOverlay');
-    const form    = document.getElementById('gateForm');
-    const input   = document.getElementById('gateInput');
-    const error   = document.getElementById('gateError');
+    const overlay    = document.getElementById('gateOverlay');
+    const micBtn     = document.getElementById('gateMicBtn');
+    const transcript = document.getElementById('gateTranscript');
+    const error      = document.getElementById('gateError');
+    const sub        = document.getElementById('gateSub');
 
-    setTimeout(() => input.focus(), 80);
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      if (input.value === SECRET) {
-        overlay.classList.add('gate-out');
-        overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
-      } else {
-        error.textContent = 'Wrong PIN! Try again.';
-        input.value = '';
-        input.classList.add('gate-shake');
-        input.addEventListener('animationend', () => input.classList.remove('gate-shake'), { once: true });
+    function pass() {
+      overlay.classList.add('gate-out');
+      overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+    }
+
+    function hasEatingIntent(text) {
+      return /\beat(ing|s)?\b|here to eat|gonna eat|going to eat|want to eat/i.test(text);
+    }
+
+    function speak(text, cb) {
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.onend = cb || null;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utt);
+    }
+
+    function startListening() {
+      if (!SpeechRecognition) {
+        error.textContent = 'Voice not supported in this browser.';
+        return;
       }
+      const rec = new SpeechRecognition();
+      rec.continuous = false;
+      rec.interimResults = true;
+      rec.lang = 'en-US';
+
+      micBtn.classList.add('listening');
+      micBtn.disabled = true;
+      sub.textContent = 'Listening…';
+      error.textContent = '';
+      transcript.innerHTML = '';
+
+      rec.onresult = e => {
+        let interim = '', final = '';
+        for (const r of e.results) {
+          if (r.isFinal) final += r[0].transcript;
+          else interim += r[0].transcript;
+        }
+        transcript.innerHTML =
+          (final ? final : '') +
+          (interim ? `<span class="interim">${interim}</span>` : '');
+      };
+
+      rec.onend = () => {
+        micBtn.classList.remove('listening');
+        micBtn.disabled = false;
+        sub.textContent = 'Tap the mic to try again';
+        const said = transcript.textContent.trim();
+        if (hasEatingIntent(said)) {
+          sub.textContent = 'Welcome! 🎉';
+          setTimeout(pass, 600);
+        } else if (said) {
+          error.textContent = "Hmm, didn't catch that — try again!";
+        } else {
+          error.textContent = 'Nothing heard — try again!';
+        }
+      };
+
+      rec.onerror = e => {
+        micBtn.classList.remove('listening');
+        micBtn.disabled = false;
+        sub.textContent = 'Tap the mic to try again';
+        error.textContent = e.error === 'not-allowed'
+          ? 'Mic access denied — check browser permissions.'
+          : 'Something went wrong — try again!';
+      };
+
+      rec.start();
+    }
+
+    micBtn.addEventListener('click', () => {
+      speak('Who is this?', startListening);
     });
   })();
 
