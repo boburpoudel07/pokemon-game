@@ -11,6 +11,11 @@ function actx() {
   if (_actx.state === 'suspended') _actx.resume();
   return _actx;
 }
+// iOS/Safari requires AudioContext to be resumed inside a user gesture
+document.addEventListener('touchend', function unlock() {
+  actx().resume();
+  document.removeEventListener('touchend', unlock);
+}, { once: true });
 function sn(ctx, type, freq, t, dur, vol, ef) {
   const o = ctx.createOscillator(), g = ctx.createGain();
   o.connect(g); g.connect(ctx.destination);
