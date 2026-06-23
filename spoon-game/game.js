@@ -51,27 +51,118 @@ const playWin = () => {
 
 /* ── POKÉMON DATA ── */
 const BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/';
-/* Starters → rare pseudo-legendaries: Bulbasaur → Charmander → Squirtle → Larvitar → Deino */
-const EVOS = [
-  /* ── Bulbasaur line ── */
-  { name: 'Bulbasaur',  type: 'Grass',  color: '#78C850', glow: 'rgba(120,200,80,.55)',  at: 0,   id: 1,   bg: ['#cff0c8', '#88d060'] },
-  { name: 'Ivysaur',    type: 'Grass',  color: '#58A830', glow: 'rgba(88,168,48,.65)',   at: 10,  id: 2,   bg: ['#b0e0a0', '#60b040'] },
-  { name: 'Venusaur',   type: 'Grass',  color: '#3A7820', glow: 'rgba(58,120,32,.65)',   at: 20,  id: 3,   bg: ['#90c878', '#409028'] },
-  /* ── Charmander line ── */
-  { name: 'Charmander', type: 'Fire',   color: '#F08030', glow: 'rgba(240,128,48,.55)',  at: 30,  id: 4,   bg: ['#ffe0b8', '#f09040'] },
-  { name: 'Charmeleon', type: 'Fire',   color: '#D05018', glow: 'rgba(208,80,24,.65)',   at: 40,  id: 5,   bg: ['#ffc898', '#e07020'] },
-  { name: 'Charizard',  type: 'Fire',   color: '#A03010', glow: 'rgba(200,60,20,.70)',   at: 50,  id: 6,   bg: ['#ffb080', '#c84010'] },
-  /* ── Squirtle line ── */
-  { name: 'Squirtle',   type: 'Water',  color: '#6890F0', glow: 'rgba(104,144,240,.55)', at: 60,  id: 7,   bg: ['#c8e0ff', '#70a8f8'] },
-  { name: 'Wartortle',  type: 'Water',  color: '#3860D0', glow: 'rgba(56,96,208,.65)',   at: 70,  id: 8,   bg: ['#a8c8f8', '#4880e0'] },
-  { name: 'Blastoise',  type: 'Water',  color: '#1840A8', glow: 'rgba(24,64,168,.65)',   at: 80,  id: 9,   bg: ['#80b0f0', '#2060c8'] },
-  /* ── Larvitar line → Deino line (rare, complex) ── */
-  { name: 'Larvitar',   type: 'Rock',   color: '#B8A038', glow: 'rgba(184,160,56,.65)',  at: 90,  id: 246, bg: ['#e8dca0', '#c0a840'] },
-  { name: 'Pupitar',    type: 'Rock',   color: '#708080', glow: 'rgba(112,128,128,.65)', at: 100, id: 247, bg: ['#c8d0d0', '#7898a0'] },
-  { name: 'Tyranitar',  type: 'Dark',   color: '#2E6040', glow: 'rgba(40,90,50,.70)',    at: 110, id: 248, bg: ['#90b898', '#306848'] },
-  { name: 'Deino',      type: 'Dark',   color: '#5830A8', glow: 'rgba(88,48,168,.65)',   at: 120, id: 633, bg: ['#c8b0e8', '#7050b8'] },
-  { name: 'Hydreigon',  type: 'Dragon', color: '#1010A0', glow: 'rgba(20,10,160,.80)',   at: 130, id: 635, bg: ['#7868c0', '#181898'] },
+
+const LINE_POOL = [
+  [ // Bulbasaur
+    { name:'Bulbasaur',  type:'Grass',    color:'#78C850', glow:'rgba(120,200,80,.55)',  id:1,   bg:['#cff0c8','#88d060'] },
+    { name:'Ivysaur',    type:'Grass',    color:'#58A830', glow:'rgba(88,168,48,.65)',   id:2,   bg:['#b0e0a0','#60b040'] },
+    { name:'Venusaur',   type:'Grass',    color:'#3A7820', glow:'rgba(58,120,32,.65)',   id:3,   bg:['#90c878','#409028'] },
+  ],[ // Charmander
+    { name:'Charmander', type:'Fire',     color:'#F08030', glow:'rgba(240,128,48,.55)',  id:4,   bg:['#ffe0b8','#f09040'] },
+    { name:'Charmeleon', type:'Fire',     color:'#D05018', glow:'rgba(208,80,24,.65)',   id:5,   bg:['#ffc898','#e07020'] },
+    { name:'Charizard',  type:'Fire',     color:'#A03010', glow:'rgba(200,60,20,.70)',   id:6,   bg:['#ffb080','#c84010'] },
+  ],[ // Squirtle
+    { name:'Squirtle',   type:'Water',    color:'#6890F0', glow:'rgba(104,144,240,.55)', id:7,   bg:['#c8e0ff','#70a8f8'] },
+    { name:'Wartortle',  type:'Water',    color:'#3860D0', glow:'rgba(56,96,208,.65)',   id:8,   bg:['#a8c8f8','#4880e0'] },
+    { name:'Blastoise',  type:'Water',    color:'#1840A8', glow:'rgba(24,64,168,.65)',   id:9,   bg:['#80b0f0','#2060c8'] },
+  ],[ // Caterpie
+    { name:'Caterpie',   type:'Bug',      color:'#A8B820', glow:'rgba(168,184,32,.55)',  id:10,  bg:['#e8f0a0','#b0c030'] },
+    { name:'Metapod',    type:'Bug',      color:'#8C9810', glow:'rgba(140,152,16,.65)',  id:11,  bg:['#d0d880','#909820'] },
+    { name:'Butterfree', type:'Flying',   color:'#6870C8', glow:'rgba(104,112,200,.65)', id:12,  bg:['#c0c8f8','#7880d8'] },
+  ],[ // Pidgey
+    { name:'Pidgey',     type:'Flying',   color:'#A890F0', glow:'rgba(168,144,240,.55)', id:16,  bg:['#e8e0ff','#b0a0f8'] },
+    { name:'Pidgeotto',  type:'Flying',   color:'#8870D0', glow:'rgba(136,112,208,.65)', id:17,  bg:['#d0c8ff','#9080e0'] },
+    { name:'Pidgeot',    type:'Flying',   color:'#6850B0', glow:'rgba(104,80,176,.70)',  id:18,  bg:['#b8b0f0','#7060c0'] },
+  ],[ // Abra
+    { name:'Abra',       type:'Psychic',  color:'#F85888', glow:'rgba(248,88,136,.65)',  id:63,  bg:['#ffc0d8','#f87098'] },
+    { name:'Kadabra',    type:'Psychic',  color:'#D83868', glow:'rgba(216,56,104,.65)',  id:64,  bg:['#f0a0c0','#d85080'] },
+    { name:'Alakazam',   type:'Psychic',  color:'#B81848', glow:'rgba(184,24,72,.70)',   id:65,  bg:['#e08080','#c03060'] },
+  ],[ // Machop
+    { name:'Machop',     type:'Fighting', color:'#C03028', glow:'rgba(192,48,40,.65)',   id:66,  bg:['#f0b0b0','#d04040'] },
+    { name:'Machoke',    type:'Fighting', color:'#A01818', glow:'rgba(160,24,24,.65)',   id:67,  bg:['#e09090','#b02828'] },
+    { name:'Machamp',    type:'Fighting', color:'#800010', glow:'rgba(128,0,16,.70)',    id:68,  bg:['#d07070','#901020'] },
+  ],[ // Bellsprout
+    { name:'Bellsprout', type:'Grass',    color:'#78C830', glow:'rgba(120,200,48,.55)',  id:69,  bg:['#d0f0a0','#90c840'] },
+    { name:'Weepinbell', type:'Grass',    color:'#58A820', glow:'rgba(88,168,32,.65)',   id:70,  bg:['#b0d880','#70b030'] },
+    { name:'Victreebel', type:'Grass',    color:'#389010', glow:'rgba(56,144,16,.70)',   id:71,  bg:['#90c060','#508020'] },
+  ],[ // Geodude
+    { name:'Geodude',    type:'Rock',     color:'#B8A038', glow:'rgba(184,160,56,.65)',  id:74,  bg:['#e8dca0','#c0a840'] },
+    { name:'Graveler',   type:'Rock',     color:'#988020', glow:'rgba(152,128,32,.65)',  id:75,  bg:['#d8c880','#a09030'] },
+    { name:'Golem',      type:'Rock',     color:'#786018', glow:'rgba(120,96,24,.70)',   id:76,  bg:['#c0b060','#887020'] },
+  ],[ // Gastly
+    { name:'Gastly',     type:'Ghost',    color:'#705898', glow:'rgba(112,88,152,.65)',  id:92,  bg:['#c8b8e0','#8070b8'] },
+    { name:'Haunter',    type:'Ghost',    color:'#503870', glow:'rgba(80,56,112,.65)',   id:93,  bg:['#b0a0d0','#6050a0'] },
+    { name:'Gengar',     type:'Ghost',    color:'#302050', glow:'rgba(48,32,80,.80)',    id:94,  bg:['#8878c0','#403080'] },
+  ],[ // Dratini
+    { name:'Dratini',    type:'Dragon',   color:'#7038F8', glow:'rgba(112,56,248,.65)',  id:147, bg:['#d0b8ff','#8060f8'] },
+    { name:'Dragonair',  type:'Dragon',   color:'#5010D0', glow:'rgba(80,16,208,.65)',   id:148, bg:['#b898f0','#6040d8'] },
+    { name:'Dragonite',  type:'Dragon',   color:'#3000A0', glow:'rgba(48,0,160,.80)',    id:149, bg:['#9080e0','#4020b8'] },
+  ],[ // Larvitar
+    { name:'Larvitar',   type:'Rock',     color:'#B8A038', glow:'rgba(184,160,56,.65)',  id:246, bg:['#e8dca0','#c0a840'] },
+    { name:'Pupitar',    type:'Rock',     color:'#708080', glow:'rgba(112,128,128,.65)', id:247, bg:['#c8d0d0','#7898a0'] },
+    { name:'Tyranitar',  type:'Dark',     color:'#2E6040', glow:'rgba(40,90,50,.70)',    id:248, bg:['#90b898','#306848'] },
+  ],[ // Chikorita
+    { name:'Chikorita',  type:'Grass',    color:'#78C850', glow:'rgba(120,200,80,.55)',  id:152, bg:['#cff0c8','#88d060'] },
+    { name:'Bayleef',    type:'Grass',    color:'#58A830', glow:'rgba(88,168,48,.65)',   id:153, bg:['#b0e0a0','#60b040'] },
+    { name:'Meganium',   type:'Grass',    color:'#3A7820', glow:'rgba(58,120,32,.65)',   id:154, bg:['#90c878','#409028'] },
+  ],[ // Cyndaquil
+    { name:'Cyndaquil',  type:'Fire',     color:'#F08030', glow:'rgba(240,128,48,.55)',  id:155, bg:['#ffe0b8','#f09040'] },
+    { name:'Quilava',    type:'Fire',     color:'#D05018', glow:'rgba(208,80,24,.65)',   id:156, bg:['#ffc898','#e07020'] },
+    { name:'Typhlosion', type:'Fire',     color:'#A03010', glow:'rgba(200,60,20,.70)',   id:157, bg:['#ffb080','#c84010'] },
+  ],[ // Totodile
+    { name:'Totodile',   type:'Water',    color:'#6890F0', glow:'rgba(104,144,240,.55)', id:158, bg:['#c8e0ff','#70a8f8'] },
+    { name:'Croconaw',   type:'Water',    color:'#3860D0', glow:'rgba(56,96,208,.65)',   id:159, bg:['#a8c8f8','#4880e0'] },
+    { name:'Feraligatr', type:'Water',    color:'#1840A8', glow:'rgba(24,64,168,.65)',   id:160, bg:['#80b0f0','#2060c8'] },
+  ],[ // Mareep
+    { name:'Mareep',     type:'Electric', color:'#F8D030', glow:'rgba(248,208,48,.55)',  id:179, bg:['#fff8a0','#f8d848'] },
+    { name:'Flaaffy',    type:'Electric', color:'#D8A020', glow:'rgba(216,160,32,.65)',  id:180, bg:['#f8e880','#d8b030'] },
+    { name:'Ampharos',   type:'Electric', color:'#B88010', glow:'rgba(184,128,16,.70)',  id:181, bg:['#f0d060','#c09020'] },
+  ],[ // Treecko
+    { name:'Treecko',    type:'Grass',    color:'#78C850', glow:'rgba(120,200,80,.55)',  id:252, bg:['#cff0c8','#88d060'] },
+    { name:'Grovyle',    type:'Grass',    color:'#58A830', glow:'rgba(88,168,48,.65)',   id:253, bg:['#b0e0a0','#60b040'] },
+    { name:'Sceptile',   type:'Grass',    color:'#3A7820', glow:'rgba(58,120,32,.65)',   id:254, bg:['#90c878','#409028'] },
+  ],[ // Torchic
+    { name:'Torchic',    type:'Fire',     color:'#F08030', glow:'rgba(240,128,48,.55)',  id:255, bg:['#ffe0b8','#f09040'] },
+    { name:'Combusken',  type:'Fire',     color:'#D05018', glow:'rgba(208,80,24,.65)',   id:256, bg:['#ffc898','#e07020'] },
+    { name:'Blaziken',   type:'Fire',     color:'#A03010', glow:'rgba(200,60,20,.70)',   id:257, bg:['#ffb080','#c84010'] },
+  ],[ // Mudkip
+    { name:'Mudkip',     type:'Water',    color:'#6890F0', glow:'rgba(104,144,240,.55)', id:258, bg:['#c8e0ff','#70a8f8'] },
+    { name:'Marshtomp',  type:'Water',    color:'#3860D0', glow:'rgba(56,96,208,.65)',   id:259, bg:['#a8c8f8','#4880e0'] },
+    { name:'Swampert',   type:'Water',    color:'#1840A8', glow:'rgba(24,64,168,.65)',   id:260, bg:['#80b0f0','#2060c8'] },
+  ],[ // Bagon
+    { name:'Bagon',      type:'Dragon',   color:'#6040C0', glow:'rgba(96,64,192,.65)',   id:371, bg:['#c8b8f0','#7060d0'] },
+    { name:'Shelgon',    type:'Dragon',   color:'#403080', glow:'rgba(64,48,128,.65)',   id:372, bg:['#a898d8','#5040a0'] },
+    { name:'Salamence',  type:'Dragon',   color:'#2010A0', glow:'rgba(32,16,160,.80)',   id:373, bg:['#8878c8','#302090'] },
+  ],[ // Gible
+    { name:'Gible',      type:'Dragon',   color:'#7038F8', glow:'rgba(112,56,248,.65)',  id:443, bg:['#d0b8ff','#8060f8'] },
+    { name:'Gabite',     type:'Dragon',   color:'#5018D0', glow:'rgba(80,24,208,.65)',   id:444, bg:['#b898f8','#6040e0'] },
+    { name:'Garchomp',   type:'Dragon',   color:'#3800B0', glow:'rgba(56,0,176,.80)',    id:445, bg:['#9878e8','#4020c0'] },
+  ],[ // Deino
+    { name:'Deino',      type:'Dark',     color:'#5830A8', glow:'rgba(88,48,168,.65)',   id:633, bg:['#c8b0e8','#7050b8'] },
+    { name:'Zweilous',   type:'Dark',     color:'#382880', glow:'rgba(56,40,128,.65)',   id:634, bg:['#a898d0','#503890'] },
+    { name:'Hydreigon',  type:'Dragon',   color:'#1010A0', glow:'rgba(20,10,160,.80)',   id:635, bg:['#7868c0','#181898'] },
+  ],
 ];
+
+function _shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildEvos() {
+  const lines = _shuffle(LINE_POOL).slice(0, 4);
+  let at = 0;
+  const evos = [];
+  lines.forEach(line => { line.forEach(p => { evos.push({ ...p, at }); at += 10; }); });
+  return evos;
+}
+
+const EVOS = buildEvos();
+const WIN_AT = EVOS[EVOS.length - 1].at + 10;
 
 // Preload all images
 EVOS.forEach(e => { const i = new Image(); i.src = BASE + e.id + '.png'; });
@@ -258,7 +349,7 @@ window.eatSpoon = function eatSpoon() {
 
   updateUI();
 
-  if (count >= 140) {
+  if (count >= WIN_AT) {
     const delay = evolving ? 4000 : 1200;
     setTimeout(() => {
       winPokes.innerHTML = '';
@@ -305,8 +396,8 @@ window.skipStage = function skipStage() {
     eating = false;
     triggerEvolution(evoIdx);
     updateUI();
-  } else if (count < 140) {
-    count = 140;
+  } else if (count < WIN_AT) {
+    count = WIN_AT;
     counterNum.textContent = count;
     updateUI();
     setTimeout(() => {
