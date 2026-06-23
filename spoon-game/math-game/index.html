@@ -240,7 +240,7 @@ canvas {
 
   <div id="encOverlay">
     <div class="enc-card">
-      <div class="enc-wild">A wild Pokémon appeared!</div>
+      <div class="enc-wild" id="encWild">A wild Pokémon appeared!</div>
       <div class="enc-name" id="encName"></div>
       <img class="enc-sprite" id="encSprite" src="" alt="">
       <button class="enc-btn" id="encBtn">Continue →</button>
@@ -286,13 +286,16 @@ const PKM = {
   122:'Mr. Mime', 123:'Scyther', 125:'Electabuzz', 126:'Magmar',
   127:'Pinsir', 129:'Magikarp', 131:'Lapras', 133:'Eevee',
   137:'Porygon', 138:'Omanyte', 140:'Kabuto', 143:'Snorlax',
+  144:'Articuno', 145:'Zapdos', 146:'Moltres',
   147:'Dratini', 150:'Mewtwo', 151:'Mew',
 };
-const PLAYER_ID = 25; // Pikachu
+const PLAYER_ID   = 25; // Pikachu
+const LEGENDARIES = [144, 145, 146, 150, 151];
 
-const POOL = Object.keys(PKM).map(Number).filter(id => id !== PLAYER_ID);
-// Encounter node indices within the 20-node path (node 0 = start, never has encounter)
-const ENC_POSITIONS = [2, 4, 7, 9, 12, 14, 16, 18, 19];
+const POOL = Object.keys(PKM).map(Number).filter(id => id !== PLAYER_ID && !LEGENDARIES.includes(id));
+// Encounter node indices (0 = start, never has encounter; 19 = end, always legendary)
+const ENC_POSITIONS = [2, 4, 7, 9, 12, 14, 16, 18];
+const LAST_NODE     = 19;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -304,9 +307,11 @@ function shuffle(arr) {
 }
 
 function buildPath() {
-  const picked = shuffle(POOL).slice(0, ENC_POSITIONS.length);
-  const encMap = {};
+  const picked    = shuffle(POOL).slice(0, ENC_POSITIONS.length);
+  const legendary = LEGENDARIES[Math.floor(Math.random() * LEGENDARIES.length)];
+  const encMap    = {};
   ENC_POSITIONS.forEach((pos, i) => { encMap[pos] = picked[i]; });
+  encMap[LAST_NODE] = legendary;
   return Array.from({ length: 20 }, (_, i) => ({ pk: encMap[i] ?? null }));
 }
 
@@ -531,6 +536,10 @@ function onArrived() {
 
 // ─── Encounter ────────────────────────────────────────────────────────
 function showEncounter(id) {
+  const isLegendary = LEGENDARIES.includes(id);
+  document.getElementById('encWild').textContent =
+    isLegendary ? '✨ A legendary Pokémon appeared! ✨' : 'A wild Pokémon appeared!';
+  document.getElementById('encWild').style.color = isLegendary ? '#ffd700' : '#66bb6a';
   document.getElementById('encName').textContent = (PKM[id] || `#${id}`).toUpperCase();
   document.getElementById('encSprite').src = spriteUrl(id);
   document.getElementById('encOverlay').classList.add('show');
@@ -580,21 +589,36 @@ function rand(min, max) {
 }
 
 function nextProblem() {
-  const level = curNode;
-  const cap   = Math.min(9 + Math.floor(level * 4.5), 99);
-  const isAdd = Math.random() > 0.38;
+  const level     = curNode;
+  const lastRow   = curNode >= 15;
+  const isAdd     = Math.random() > 0.38;
 
   let a, b, op, ans;
-  if (isAdd) {
-    a   = rand(1, cap);
-    b   = rand(1, cap);
-    op  = '+';
-    ans = a + b;
+  if (lastRow) {
+    if (isAdd) {
+      a   = rand(100, 500);
+      b   = rand(100, 500);
+      op  = '+';
+      ans = a + b;
+    } else {
+      a   = rand(200, 999);
+      b   = rand(100, a - 1);
+      op  = '−';
+      ans = a - b;
+    }
   } else {
-    a   = rand(2, cap);
-    b   = rand(1, a);
-    op  = '−';
-    ans = a - b;
+    const cap = Math.min(9 + Math.floor(level * 4.5), 99);
+    if (isAdd) {
+      a   = rand(1, cap);
+      b   = rand(1, cap);
+      op  = '+';
+      ans = a + b;
+    } else {
+      a   = rand(2, cap);
+      b   = rand(1, a);
+      op  = '−';
+      ans = a - b;
+    }
   }
   problem = { ans };
 
