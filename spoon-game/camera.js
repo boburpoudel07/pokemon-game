@@ -21,11 +21,12 @@ const camChargeBar  = document.getElementById('camChargeBar');
 const chargeRingEl  = document.getElementById('chargeRing');
 
 /* ── STATE ── */
-let hands       = null;
-let cameraOn    = false;
-let detectLoop  = null;
-let chargeLevel = 0;
-let lastEatMs   = 0;
+let hands          = null;
+let cameraOn       = false;
+let detectLoop     = null;
+let chargeLevel    = 0;
+let lastEatMs      = 0;
+let requireHandDown = false;   // must lower hand before next charge
 
 /* ── HELPERS ── */
 function setCamStatus(dotClass, text) {
@@ -132,13 +133,21 @@ function onResults(results) {
   const lm       = results.multiHandLandmarks && results.multiHandLandmarks[0];
   const detected = lm ? isOpenPalm(lm) : false;
 
-  const newCharge = detected
+  // clear the gate as soon as the hand comes down
+  if (requireHandDown && !detected) {
+    requireHandDown = false;
+  }
+
+  const canCharge = detected && !requireHandDown;
+  const newCharge = canCharge
     ? Math.min(1, chargeLevel + CHARGE_RATE)
     : Math.max(0, chargeLevel - DRAIN_RATE);
   setCharge(newCharge);
-  drawFrame(lm || null, detected);
+  drawFrame(lm || null, detected && !requireHandDown);
 
-  if (detected && newCharge < 1) {
+  if (requireHandDown) {
+    setCamStatus('charging', 'Lower your hand first!');
+  } else if (canCharge && newCharge < 1) {
     setCamStatus('charging', `Charging… ${Math.round(newCharge * 100)}%`);
   } else if (!detected && chargeLevel < 0.05) {
     setCamStatus('ready', 'Show ✋ open palm!');
@@ -147,10 +156,13 @@ function onResults(results) {
   const now = Date.now();
   if (newCharge >= 1 && now - lastEatMs > EAT_COOLDOWN_MS) {
     lastEatMs = now;
+    requireHandDown = true;
     setCharge(0);
     flashCamera();
     setCamStatus('found', 'Nom! 🎉');
-    setTimeout(() => setCamStatus('ready', 'Show ✋ open palm!'), 1200);
+    setTimeout(() => {
+      if (!requireHandDown) setCamStatus('ready', 'Show ✋ open palm!');
+    }, 1200);
     window.eatSpoon();
   }
 }
