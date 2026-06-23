@@ -3,271 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥄 Pokémon Spoon Eater!</title>
-<link rel="stylesheet" href="style.css">
+<title>Choose Your Game</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0f0f1a;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+  }
+
+  /* starfield */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 45%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 90%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 75%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 55%, #fff 0%, transparent 100%);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    opacity: 0.85;
+  }
+
+  .cards {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .card {
+    position: relative;
+    width: 260px;
+    height: 320px;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-8px) scale(1.03);
+  }
+
+  /* Food card */
+  .card-food {
+    background: linear-gradient(145deg, #1e3a5f, #0d2035);
+    box-shadow: 0 8px 40px rgba(80, 160, 255, 0.3);
+    border: 1.5px solid rgba(80, 160, 255, 0.25);
+  }
+  .card-food:hover {
+    box-shadow: 0 16px 60px rgba(80, 160, 255, 0.5);
+  }
+
+  /* Math card */
+  .card-math {
+    background: linear-gradient(145deg, #1f3a1f, #0a1a0a);
+    box-shadow: 0 8px 40px rgba(50, 160, 50, 0.25);
+    border: 1.5px solid rgba(80, 200, 80, 0.2);
+  }
+  .card-math:hover {
+    box-shadow: 0 16px 60px rgba(50, 200, 50, 0.4);
+  }
+
+  .card-icon {
+    font-size: 5rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+
+  .card-label {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+  }
+
+  .card-sub {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* glow ring on food card */
+  .card-food::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    background: conic-gradient(from 0deg, #4fc3f7, #1565c0, #4fc3f7);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card-food:hover::after {
+    opacity: 0.35;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+    .cards { gap: 1.2rem; }
+    .card { width: 220px; height: 270px; }
+    .card-icon { font-size: 4rem; }
+  }
+</style>
 </head>
 <body>
 
-<!-- GAME LOGIN GATE -->
-<div class="gate-overlay" id="gateOverlay">
-  <div class="gate-card">
-    <div class="gate-logo">🥄</div>
-    <div class="gate-title">Pokémon Spoon Eater</div>
-    <div class="gate-sub" id="gateSub">Tap the mic to identify yourself</div>
-    <button class="gate-mic-btn" id="gateMicBtn">🎤</button>
-    <div class="gate-transcript" id="gateTranscript"></div>
-    <div class="gate-error" id="gateError"></div>
-  </div>
+<h1>Pick a Game</h1>
+
+<div class="cards">
+  <a class="card card-food" href="food.html">
+    <div class="card-icon">🥄</div>
+    <div class="card-label">Food</div>
+    <div class="card-sub">Pokémon Spoon Eater</div>
+  </a>
+
+  <a class="card card-math" href="math-game/index.html">
+    <div class="card-icon">➗</div>
+    <div class="card-label">Math</div>
+    <div class="card-sub">Pokémon Map Adventure</div>
+  </a>
 </div>
 
-<!-- PIN MODAL -->
-<div class="pin-overlay" id="pinOverlay">
-  <div class="pin-card">
-    <button class="pin-close" id="pinClose" type="button">✕</button>
-    <div class="pin-logo">🔐</div>
-    <div class="pin-title">Cheat Mode</div>
-    <div class="pin-sub">Enter PIN to unlock skip evolution</div>
-    <form id="pinForm" autocomplete="off">
-      <input type="password" class="pin-input" id="pinInput" placeholder="· · · ·" maxlength="6" inputmode="numeric" pattern="[0-9]*">
-      <div class="pin-error" id="pinError"></div>
-      <button type="submit" class="pin-submit">Unlock ✨</button>
-    </form>
-  </div>
-</div>
-
-<!-- LOCK BUTTON (top right) -->
-<button class="lock-btn" id="lockBtn" title="Unlock cheat mode">🔒</button>
-
-<button id="skipBtn" class="skip-btn" style="display:none">⏭ Skip Stage</button>
-
-<div class="game-title">🥄 Pokémon Spoon Eater! 🥄</div>
-
-<div class="evo-row">
-  <div class="evo-name" id="evoName">Magikarp</div>
-  <div class="type-badge" id="typeBadge" style="--type-color:#6890F0">Water</div>
-</div>
-
-<div class="counter">
-  <span>🥄</span><span class="counter-number" id="counterNum">0</span><span>spoons!</span>
-</div>
-
-<div class="timer-wrap" id="timerWrap">
-  <span class="timer-icon">⏱</span>
-  <span class="timer-num" id="timerNum">90</span>
-  <div class="timer-track">
-    <div class="timer-bar" id="timerBar"></div>
-  </div>
-  <button class="break-btn" id="breakBtn">⏸ Break</button>
-</div>
-
-<div class="progress-wrap">
-  <div class="progress-outer">
-    <div class="progress-inner" id="progressBar" style="width:0%"></div>
-  </div>
-  <div class="progress-label" id="progressLabel">5 more spoons to get Squirtle!</div>
-</div>
-
-<!-- POKÉMON SCENE -->
-<div class="scene" id="scene">
-  <!-- Charge ring sits outside the disc as a conic-gradient layer -->
-  <div class="charge-ring-wrap">
-    <div class="charge-ring" id="chargeRing" style="--charge:0"></div>
-    <div class="poke-disc" id="pokeDisc">
-      <img class="poke-img" id="pokeImg"
-        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/129.png"
-        alt="Magikarp">
-    </div>
-  </div>
-</div>
-
-<div class="instructions">⬇️ Spacebar or show an open palm to the camera! ⬇️</div>
-
-<!-- Evolution overlays -->
-<div class="evo-flash" id="evoFlash"></div>
-<div class="evo-msg"   id="evoMsg"></div>
-
-<!-- CAMERA PANEL -->
-<div class="cam-panel" id="camPanel">
-  <div class="cam-header">
-    <span class="cam-title">📷 Palm Detector</span>
-    <div class="cam-header-btns">
-      <button class="cam-minimize-btn" id="camMinBtn" title="Minimize">−</button>
-      <button class="cam-toggle-btn" id="camBtn">Enable</button>
-    </div>
-  </div>
-  <div class="cam-feed-wrap" id="camFeedWrap" style="display:none">
-    <video class="cam-video"  id="camVideo"  autoplay playsinline muted></video>
-    <canvas class="cam-canvas" id="camCanvas"></canvas>
-    <div class="cam-detect-flash" id="camFlash"></div>
-    <div class="cam-charge-bar-wrap">
-      <div class="cam-charge-bar" id="camChargeBar"></div>
-    </div>
-  </div>
-  <div class="cam-status">
-    <div class="cam-dot idle" id="camDot"></div>
-    <span id="camStatusText">Camera off — click Enable to start</span>
-  </div>
-</div>
-
-<!-- WIN SCREEN -->
-<div class="win-overlay" id="winOverlay">
-  <div class="win-trophy">🏆</div>
-  <div class="win-title">Pokémon Master!</div>
-  <div class="win-pokes" id="winPokes"></div>
-  <div class="win-sub">100 spoons — Dragon Master! 🐉👑</div>
-  <button class="restart-btn" id="restartBtn">Play Again! 🥄</button>
-</div>
-
-<!-- game logic first, then camera (camera calls window.eatSpoon) -->
-<script>
-  // GAME LOGIN GATE — voice auth
-  (function () {
-    const overlay    = document.getElementById('gateOverlay');
-    const micBtn     = document.getElementById('gateMicBtn');
-    const transcript = document.getElementById('gateTranscript');
-    const error      = document.getElementById('gateError');
-    const sub        = document.getElementById('gateSub');
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    function pass() {
-      overlay.classList.add('gate-out');
-      overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
-    }
-
-    function hasEatingIntent(text) {
-      return /\beat(ing|s)?\b|here to eat|gonna eat|going to eat|want to eat/i.test(text);
-    }
-
-    function speak(text, cb) {
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.onend = cb || null;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utt);
-    }
-
-    function startListening() {
-      if (!SpeechRecognition) {
-        error.textContent = 'Voice not supported in this browser.';
-        return;
-      }
-      const rec = new SpeechRecognition();
-      rec.continuous = false;
-      rec.interimResults = true;
-      rec.lang = 'en-US';
-
-      micBtn.classList.add('listening');
-      micBtn.disabled = true;
-      sub.textContent = 'Listening…';
-      error.textContent = '';
-      transcript.innerHTML = '';
-
-      rec.onresult = e => {
-        let interim = '', final = '';
-        for (const r of e.results) {
-          if (r.isFinal) final += r[0].transcript;
-          else interim += r[0].transcript;
-        }
-        transcript.innerHTML =
-          (final ? final : '') +
-          (interim ? `<span class="interim">${interim}</span>` : '');
-      };
-
-      rec.onend = () => {
-        micBtn.classList.remove('listening');
-        micBtn.disabled = false;
-        sub.textContent = 'Tap the mic to try again';
-        const said = transcript.textContent.trim();
-        if (hasEatingIntent(said)) {
-          sub.textContent = 'Welcome! 🎉';
-          setTimeout(pass, 600);
-        } else if (said) {
-          error.textContent = "Hmm, didn't catch that — try again!";
-        } else {
-          error.textContent = 'Nothing heard — try again!';
-        }
-      };
-
-      rec.onerror = e => {
-        micBtn.classList.remove('listening');
-        micBtn.disabled = false;
-        sub.textContent = 'Tap the mic to try again';
-        error.textContent = e.error === 'not-allowed'
-          ? 'Mic access denied — check browser permissions.'
-          : 'Something went wrong — try again!';
-      };
-
-      rec.start();
-    }
-
-    micBtn.addEventListener('click', () => {
-      speak('Who is this?', startListening);
-    });
-  })();
-
-  document.getElementById('camMinBtn').addEventListener('click', () => {
-    const panel = document.getElementById('camPanel');
-    const minimized = panel.classList.toggle('cam-panel--minimized');
-    document.getElementById('camMinBtn').textContent = minimized ? '+' : '−';
-  });
-
-  (function () {
-    const SECRET     = '6767';
-    const pinOverlay = document.getElementById('pinOverlay');
-    const pinForm    = document.getElementById('pinForm');
-    const pinInput   = document.getElementById('pinInput');
-    const pinError   = document.getElementById('pinError');
-    const pinClose   = document.getElementById('pinClose');
-    const lockBtn    = document.getElementById('lockBtn');
-    const skipBtn    = document.getElementById('skipBtn');
-    let unlocked = false;
-
-    function openModal() {
-      pinInput.value = '';
-      pinError.textContent = '';
-      skipBtn.style.display = 'none';
-      pinOverlay.classList.add('show');
-      setTimeout(() => pinInput.focus(), 50);
-    }
-
-    function closeModal() {
-      pinOverlay.classList.remove('show');
-    }
-
-    function setLocked(state) {
-      unlocked = !state;
-      lockBtn.textContent   = state ? '🔒' : '🔓';
-      lockBtn.title         = state ? 'Unlock cheat mode' : 'Lock cheat mode';
-      skipBtn.style.display = state ? 'none' : '';
-    }
-
-
-    lockBtn.addEventListener('click', () => {
-      if (unlocked) {
-        setLocked(true);
-      } else {
-        openModal();
-      }
-    });
-
-    pinForm.addEventListener('submit', e => {
-      e.preventDefault();
-      if (pinInput.value === SECRET) {
-        setLocked(false);
-        closeModal();
-      } else {
-        pinError.textContent = 'Wrong PIN!';
-        pinInput.value = '';
-        pinInput.classList.add('pin-shake');
-        pinInput.addEventListener('animationend', () => pinInput.classList.remove('pin-shake'), { once: true });
-      }
-    });
-
-    pinClose.addEventListener('click', closeModal);
-  })();
-</script>
-<script src="game.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-<script src="camera.js"></script>
 </body>
 </html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Adventure</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #080f09;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  user-select: none;
+}
+
+/* ── Map area ─────────────────────────────── */
+#mapWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#scoreBadge {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid #2e5c32;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.78rem;
+  color: #81c784;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+}
+
+/* ── Math panel ───────────────────────────── */
+#mathPanel {
+  background: #0c160d;
+  border-top: 2px solid #1e3d22;
+  padding: 1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.problem-block {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(1.5rem, 5.5vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.45;
+  color: #e8f5e9;
+  text-align: right;
+  letter-spacing: 0.04em;
+}
+
+.problem-block .line-b { color: #66bb6a; }
+
+.problem-block .line-sep {
+  border-top: 3px solid #388e3c;
+  margin: 2px 0 4px;
+}
+
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+#ansInput {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(1.3rem, 5vw, 2.2rem);
+  font-weight: 700;
+  width: 110px;
+  text-align: center;
+  background: #111f13;
+  border: 2px solid #2e5c32;
+  border-radius: 10px;
+  color: #fff;
+  padding: 0.25rem 0.4rem;
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+#ansInput::-webkit-outer-spin-button,
+#ansInput::-webkit-inner-spin-button { -webkit-appearance: none; }
+#ansInput:focus { border-color: #4caf50; }
+#ansInput.wrong { animation: shake 0.35s ease; border-color: #e53935; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-7px); }
+  40%      { transform: translateX(7px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}
+
+#goBtn {
+  background: #2e7d32;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+  letter-spacing: 0.04em;
+}
+#goBtn:hover  { background: #388e3c; }
+#goBtn:active { transform: scale(0.94); }
+
+/* ── Encounter overlay ────────────────────── */
+#encOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+#encOverlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.enc-card {
+  background: #0e1a10;
+  border: 2px solid #4caf50;
+  border-radius: 22px;
+  padding: 1.8rem 2.2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  animation: popIn 0.28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.enc-wild {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: #66bb6a;
+  text-transform: uppercase;
+}
+.enc-name {
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: #fff;
+}
+.enc-sprite {
+  width: 112px;
+  height: 112px;
+  image-rendering: pixelated;
+  animation: bob 0.7s ease-in-out infinite alternate;
+}
+@keyframes bob {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-9px); }
+}
+.enc-btn {
+  background: #2e7d32;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.55rem 2rem;
+  cursor: pointer;
+  margin-top: 0.3rem;
+  transition: background 0.12s;
+}
+.enc-btn:hover { background: #388e3c; }
+
+/* ── Win screen ───────────────────────────── */
+#winScreen {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 30;
+  text-align: center;
+  padding: 1rem;
+}
+#winScreen.show { display: flex; }
+.win-emoji { font-size: 4rem; animation: spin 1.5s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.win-title {
+  font-size: clamp(2rem, 8vw, 3.2rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.win-sub { font-size: 1rem; color: #aaa; }
+.win-btn {
+  background: #ffd700;
+  color: #111;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  padding: 0.75rem 2.5rem;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: transform 0.1s;
+}
+.win-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+
+<div id="mapWrap">
+  <canvas id="mapCanvas"></canvas>
+  <div id="scoreBadge">✓ 0 correct</div>
+
+  <div id="encOverlay">
+    <div class="enc-card">
+      <div class="enc-wild">A wild Pokémon appeared!</div>
+      <div class="enc-name" id="encName"></div>
+      <img class="enc-sprite" id="encSprite" src="" alt="">
+      <button class="enc-btn" id="encBtn">Continue →</button>
+    </div>
+  </div>
+
+  <div id="winScreen">
+    <div class="win-emoji">🏆</div>
+    <div class="win-title">You Win!</div>
+    <div class="win-sub" id="winSub"></div>
+    <button class="win-btn" id="winBtn">Play Again</button>
+  </div>
+</div>
+
+<div id="mathPanel">
+  <div class="problem-block">
+    <div id="lineA">&nbsp;</div>
+    <div class="line-b" id="lineB">&nbsp;</div>
+    <div class="line-sep" id="lineSep">&nbsp;</div>
+  </div>
+  <div class="answer-row">
+    <input id="ansInput" type="text" inputmode="numeric" placeholder="?" autocomplete="off" spellcheck="false">
+    <button id="goBtn">→</button>
+  </div>
+</div>
+
+<script>
+// ─── Pokémon data ────────────────────────────────────────────────────
+const PKM = {
+  1:'Bulbasaur', 4:'Charmander', 7:'Squirtle', 10:'Caterpie',
+  13:'Weedle', 16:'Pidgey', 19:'Rattata', 21:'Spearow',
+  23:'Ekans', 25:'Pikachu', 27:'Sandshrew', 29:'Nidoran♀',
+  32:'Nidoran♂', 35:'Clefairy', 37:'Vulpix', 39:'Jigglypuff',
+  41:'Zubat', 43:'Oddish', 46:'Paras', 48:'Venonat',
+  50:'Diglett', 52:'Meowth', 54:'Psyduck', 56:'Mankey',
+  58:'Growlithe', 60:'Poliwag', 63:'Abra', 66:'Machop',
+  69:'Bellsprout', 72:'Tentacool', 74:'Geodude', 77:'Ponyta',
+  79:'Slowpoke', 81:'Magnemite', 84:'Doduo', 86:'Seel',
+  88:'Grimer', 90:'Shellder', 92:'Gastly', 95:'Onix',
+  96:'Drowzee', 98:'Krabby', 100:'Voltorb', 102:'Exeggcute',
+  104:'Cubone', 109:'Koffing', 111:'Rhyhorn', 113:'Chansey',
+  114:'Tangela', 116:'Horsea', 118:'Goldeen', 120:'Staryu',
+  122:'Mr. Mime', 123:'Scyther', 125:'Electabuzz', 126:'Magmar',
+  127:'Pinsir', 129:'Magikarp', 131:'Lapras', 133:'Eevee',
+  137:'Porygon', 138:'Omanyte', 140:'Kabuto', 143:'Snorlax',
+  147:'Dratini', 150:'Mewtwo', 151:'Mew',
+};
+const PLAYER_ID = 25; // Pikachu
+
+const POOL = Object.keys(PKM).map(Number).filter(id => id !== PLAYER_ID);
+// Encounter node indices within the 20-node path (node 0 = start, never has encounter)
+const ENC_POSITIONS = [2, 4, 7, 9, 12, 14, 16, 18, 19];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildPath() {
+  const picked = shuffle(POOL).slice(0, ENC_POSITIONS.length);
+  const encMap = {};
+  ENC_POSITIONS.forEach((pos, i) => { encMap[pos] = picked[i]; });
+  return Array.from({ length: 20 }, (_, i) => ({ pk: encMap[i] ?? null }));
+}
+
+function spriteUrl(id) {
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+}
+
+// ─── Map path ────────────────────────────────────────────────────────
+let PATH = buildPath();
+
+// ─── State ───────────────────────────────────────────────────────────
+let curNode   = 0;
+let playerX   = 0;
+let playerY   = 0;
+let moving    = false;
+let moveFrom  = null;
+let moveTo_   = null;
+let moveStart = 0;
+const MOVE_MS = 520;
+
+let problem       = null;
+let correctCount  = 0;
+let revealed      = new Set([0]);
+let encountered   = new Set();
+let pendingEnc    = -1;
+let gameOver      = false;
+
+// ─── Sprite cache ────────────────────────────────────────────────────
+const imgCache = {};
+function getImg(id) {
+  if (!imgCache[id]) {
+    const img = new Image();
+    img.src = spriteUrl(id);
+    imgCache[id] = img;
+  }
+  return imgCache[id];
+}
+// Preload player + this run's encounter Pokémon
+getImg(PLAYER_ID);
+PATH.forEach(n => { if (n.pk) getImg(n.pk); });
+
+// ─── Canvas / layout ─────────────────────────────────────────────────
+const canvas = document.getElementById('mapCanvas');
+const ctx    = canvas.getContext('2d');
+let nodePos  = [];
+
+function computeLayout() {
+  canvas.width  = canvas.offsetWidth  * devicePixelRatio;
+  canvas.height = canvas.offsetHeight * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+
+  const COLS   = 5;
+  const rows   = Math.ceil(PATH.length / COLS);
+  const padX   = W * 0.11;
+  const padY   = H * 0.13;
+  const gapX   = (W - padX * 2) / (COLS - 1);
+  const gapY   = rows > 1 ? (H - padY * 2) / (rows - 1) : 0;
+
+  nodePos = PATH.map((_, i) => {
+    const row = Math.floor(i / COLS);
+    const col = i % COLS;
+    const x   = padX + (row % 2 === 0 ? col : COLS - 1 - col) * gapX;
+    const y   = padY + row * gapY;
+    return { x, y };
+  });
+
+  playerX = nodePos[curNode].x;
+  playerY = nodePos[curNode].y;
+}
+
+// ─── Render loop ─────────────────────────────────────────────────────
+const NODE_R  = 9;
+const PLR_SZ  = 96;
+
+function draw(now) {
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.7);
+  grad.addColorStop(0, '#101f12');
+  grad.addColorStop(1, '#050906');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Move animation update
+  if (moving) {
+    const t    = Math.min((now - moveStart) / MOVE_MS, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    playerX = lerp(moveFrom.x, moveTo_.x, ease);
+    playerY = lerp(moveFrom.y, moveTo_.y, ease);
+    if (t >= 1) {
+      moving  = false;
+      playerX = moveTo_.x;
+      playerY = moveTo_.y;
+      onArrived();
+    }
+  }
+
+  // Connections
+  for (let i = 0; i < PATH.length - 1; i++) {
+    const a    = nodePos[i];
+    const b    = nodePos[i + 1];
+    const vis  = revealed.has(i) && revealed.has(i + 1);
+    const half = revealed.has(i) && !revealed.has(i + 1);
+
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.lineWidth = 3;
+    if (vis) {
+      ctx.strokeStyle = '#4caf50';
+      ctx.setLineDash([]);
+    } else if (half) {
+      ctx.strokeStyle = '#2e7d32';
+      ctx.setLineDash([7, 7]);
+    } else {
+      ctx.strokeStyle = '#1a3020';
+      ctx.setLineDash([4, 10]);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Nodes
+  for (let i = 0; i < PATH.length; i++) {
+    const { x, y } = nodePos[i];
+    const vis  = revealed.has(i);
+    const hasPk = !!PATH[i].pk;
+    const isEnd = i === PATH.length - 1;
+
+    // Glow halo on Pokémon nodes
+    if (vis && hasPk) {
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, NODE_R + 12);
+      halo.addColorStop(0, 'rgba(255,215,0,0.32)');
+      halo.addColorStop(1, 'rgba(255,215,0,0)');
+      ctx.beginPath();
+      ctx.arc(x, y, NODE_R + 12, 0, Math.PI * 2);
+      ctx.fillStyle = halo;
+      ctx.fill();
+    }
+
+    // Circle
+    ctx.beginPath();
+    ctx.arc(x, y, NODE_R, 0, Math.PI * 2);
+    if (!vis) {
+      ctx.fillStyle = '#162218';
+    } else if (isEnd) {
+      ctx.fillStyle = '#ffd700';
+    } else if (hasPk) {
+      ctx.fillStyle = '#ffb300';
+    } else {
+      ctx.fillStyle = '#4caf50';
+    }
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = vis ? (isEnd ? '#ffe57f' : '#a5d6a7') : '#1e3a22';
+    ctx.stroke();
+
+    // Revealed Pokémon sprite above node
+    if (encountered.has(i) && hasPk) {
+      const img = getImg(PATH[i].pk);
+      if (img.complete && img.naturalWidth) {
+        const sz = 96;
+        ctx.drawImage(img, x - sz / 2, y - sz - NODE_R - 2, sz, sz);
+      }
+    }
+
+    // End flag
+    if (isEnd && !vis) {
+      ctx.font = `${NODE_R * 1.6}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⭐', x, y);
+    }
+  }
+
+  // Player (Pikachu)
+  const bob = Math.sin(now / 370) * 2.5;
+  const pImg = getImg(PLAYER_ID);
+  if (pImg.complete && pImg.naturalWidth) {
+    ctx.drawImage(pImg, playerX - PLR_SZ / 2, playerY - PLR_SZ / 2 + bob, PLR_SZ, PLR_SZ);
+  } else {
+    ctx.font = '26px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('⚡', playerX, playerY - NODE_R + bob);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// ─── Game logic ───────────────────────────────────────────────────────
+function startMove(from, to) {
+  moveFrom  = { ...nodePos[from] };
+  moveTo_   = { ...nodePos[to] };
+  moveStart = performance.now();
+  moving    = true;
+}
+
+function onArrived() {
+  revealed.add(curNode);
+  if (curNode === PATH.length - 1) {
+    showWin();
+    return;
+  }
+  const node = PATH[curNode];
+  if (node.pk && !encountered.has(curNode)) {
+    pendingEnc = curNode;
+    showEncounter(node.pk);
+  } else {
+    nextProblem();
+    focusInput();
+  }
+}
+
+// ─── Encounter ────────────────────────────────────────────────────────
+function showEncounter(id) {
+  document.getElementById('encName').textContent = (PKM[id] || `#${id}`).toUpperCase();
+  document.getElementById('encSprite').src = spriteUrl(id);
+  document.getElementById('encOverlay').classList.add('show');
+}
+
+document.getElementById('encBtn').addEventListener('click', () => {
+  if (pendingEnc >= 0) {
+    encountered.add(pendingEnc);
+    pendingEnc = -1;
+  }
+  document.getElementById('encOverlay').classList.remove('show');
+  nextProblem();
+  focusInput();
+});
+
+// ─── Win ──────────────────────────────────────────────────────────────
+function showWin() {
+  gameOver = true;
+  document.getElementById('winSub').textContent =
+    `${correctCount} correct answers · ${encountered.size} Pokémon found!`;
+  document.getElementById('winScreen').classList.add('show');
+}
+
+document.getElementById('winBtn').addEventListener('click', resetGame);
+
+function resetGame() {
+  PATH         = buildPath();
+  PATH.forEach(n => { if (n.pk) getImg(n.pk); });
+  curNode      = 0;
+  correctCount = 0;
+  revealed     = new Set([0]);
+  encountered  = new Set();
+  pendingEnc   = -1;
+  moving       = false;
+  gameOver     = false;
+  playerX      = nodePos[0].x;
+  playerY      = nodePos[0].y;
+  document.getElementById('winScreen').classList.remove('show');
+  document.getElementById('scoreBadge').textContent = '✓ 0 correct';
+  nextProblem();
+  focusInput();
+}
+
+// ─── Math problems ────────────────────────────────────────────────────
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function nextProblem() {
+  const level = curNode;
+  const cap   = Math.min(9 + Math.floor(level * 4.5), 99);
+  const isAdd = Math.random() > 0.38;
+
+  let a, b, op, ans;
+  if (isAdd) {
+    a   = rand(1, cap);
+    b   = rand(1, cap);
+    op  = '+';
+    ans = a + b;
+  } else {
+    a   = rand(2, cap);
+    b   = rand(1, a);
+    op  = '−';
+    ans = a - b;
+  }
+  problem = { ans };
+
+  // Three-line vertical format (right-aligned, monospace)
+  const dw   = Math.max(String(a).length, String(b).length);
+  const lineA = String(a).padStart(dw + 2);           // "  24"
+  const lineB = op + ' ' + String(b).padStart(dw);    // "+ 13"
+  const sep   = '─'.repeat(dw + 2);
+
+  document.getElementById('lineA').textContent   = lineA;
+  document.getElementById('lineB').textContent   = lineB;
+  document.getElementById('lineSep').textContent = sep;
+
+  const inp = document.getElementById('ansInput');
+  inp.value = '';
+  inp.classList.remove('wrong');
+}
+
+function checkAnswer() {
+  if (!problem || moving || gameOver) return;
+  const inp = document.getElementById('ansInput');
+  const val = parseInt(inp.value, 10);
+  if (isNaN(val)) return;
+
+  if (val === problem.ans) {
+    correctCount++;
+    document.getElementById('scoreBadge').textContent = `✓ ${correctCount} correct`;
+    inp.value = '';
+    const from = curNode;
+    curNode++;
+    startMove(from, curNode);
+  } else {
+    inp.classList.remove('wrong');
+    void inp.offsetWidth;
+    inp.classList.add('wrong');
+    inp.value = '';
+  }
+}
+
+function focusInput() {
+  setTimeout(() => document.getElementById('ansInput').focus(), 60);
+}
+
+// ─── Input events ─────────────────────────────────────────────────────
+document.getElementById('ansInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
+document.getElementById('goBtn').addEventListener('click', checkAnswer);
+
+// ─── Boot ─────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  computeLayout();
+});
+
+computeLayout();
+nextProblem();
+requestAnimationFrame(draw);
+focusInput();
+</script>
+</body>
+</html>
