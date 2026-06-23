@@ -230,9 +230,118 @@ canvas {
   transition: transform 0.1s;
 }
 .win-btn:active { transform: scale(0.95); }
+
+/* ── Lock & PIN ───────────────────────────── */
+.lock-btn {
+  position: fixed; top: 14px; right: 16px; z-index: 99;
+  font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,.88); cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,.22); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .15s, box-shadow .15s;
+}
+.lock-btn:hover  { transform: scale(1.1); box-shadow: 0 6px 22px rgba(0,0,0,.3); }
+.lock-btn:active { transform: scale(.9); }
+
+.pin-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.6); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .22s;
+}
+.pin-overlay.show { opacity: 1; pointer-events: all; }
+
+.pin-card {
+  position: relative;
+  background: linear-gradient(155deg,#1a1a2e,#16213e 60%,#0f3460);
+  border: 2px solid rgba(255,255,255,.18);
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.1);
+  padding: 36px 32px 28px;
+  width: min(310px,90vw);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  animation: pin-pop .3s cubic-bezier(.34,1.56,.64,1);
+}
+.pin-overlay:not(.show) .pin-card { animation: none; }
+@keyframes pin-pop { from{transform:scale(.84);opacity:0} to{transform:scale(1);opacity:1} }
+
+.pin-close {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(255,255,255,.1); border: none; border-radius: 8px;
+  color: rgba(255,255,255,.55); font-size: .85rem;
+  width: 26px; height: 26px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, color .15s;
+}
+.pin-close:hover { background: rgba(255,255,255,.22); color: white; }
+
+.pin-logo  { font-size: 2.6rem; }
+.pin-title { font-size: 1.25rem; font-weight: 900; color: white; text-shadow: 0 2px 10px rgba(77,150,255,.5); }
+.pin-sub   { font-size: .8rem; color: rgba(255,255,255,.55); text-align: center; margin-bottom: 2px; }
+
+#pinForm { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+.pin-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.09); color: white;
+  font-size: 1.5rem; font-family: inherit;
+  text-align: center; letter-spacing: .35em;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.pin-input::placeholder { font-size: 1.1rem; letter-spacing: .2em; color: rgba(255,255,255,.25); }
+.pin-input:focus { border-color: rgba(77,150,255,.7); box-shadow: 0 0 0 3px rgba(77,150,255,.2); }
+.pin-input.pin-shake { animation: pin-shake .4s ease; }
+@keyframes pin-shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)} 40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+}
+
+.pin-error  { min-height: 1em; font-size: .82rem; color: #ff6b6b; font-weight: bold; text-align: center; }
+
+.pin-submit {
+  width: 100%; padding: 12px; border-radius: 12px; border: none; cursor: pointer;
+  font-size: .95rem; font-family: inherit; font-weight: 900;
+  background: linear-gradient(135deg,#4d96ff,#c77dff);
+  color: white; box-shadow: 0 6px 20px rgba(77,150,255,.35);
+  transition: transform .15s, box-shadow .15s; margin-top: 2px;
+}
+.pin-submit:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(77,150,255,.5); }
+.pin-submit:active { transform: scale(.97); }
+
+.skip-btn {
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  font-size: .95rem; font-family: inherit; font-weight: 900;
+  padding: 8px 24px; border-radius: 28px; border: none; cursor: pointer;
+  background: rgba(255,255,255,.88); color: #5038a0;
+  box-shadow: 0 4px 18px rgba(0,0,0,.22); z-index: 99;
+  backdrop-filter: blur(6px);
+  transition: background .15s, box-shadow .15s;
+}
+.skip-btn:hover  { background: white; box-shadow: 0 6px 22px rgba(0,0,0,.3); }
+.skip-btn:active { transform: translateX(-50%) scale(.96); }
 </style>
 </head>
 <body>
+
+<!-- PIN MODAL -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-card">
+    <button class="pin-close" id="pinClose" type="button">✕</button>
+    <div class="pin-logo">🔐</div>
+    <div class="pin-title">Cheat Mode</div>
+    <div class="pin-sub">Enter PIN to unlock skip problem</div>
+    <form id="pinForm" autocomplete="off">
+      <input type="password" class="pin-input" id="pinInput" placeholder="· · · ·" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="pin-error" id="pinError"></div>
+      <button type="submit" class="pin-submit">Unlock ✨</button>
+    </form>
+  </div>
+</div>
+
+<button class="lock-btn" id="lockBtn" title="Unlock cheat mode">🔒</button>
+<button class="skip-btn" id="skipBtn" style="display:none">⏭ Skip Problem</button>
 
 <div id="mapWrap">
   <canvas id="mapCanvas"></canvas>
@@ -667,6 +776,65 @@ document.getElementById('ansInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') checkAnswer();
 });
 document.getElementById('goBtn').addEventListener('click', checkAnswer);
+
+// ─── Lock / PIN cheat mode ────────────────────────────────────────────
+(function () {
+  const SECRET     = '6767';
+  const pinOverlay = document.getElementById('pinOverlay');
+  const pinForm    = document.getElementById('pinForm');
+  const pinInput   = document.getElementById('pinInput');
+  const pinError   = document.getElementById('pinError');
+  const pinClose   = document.getElementById('pinClose');
+  const lockBtn    = document.getElementById('lockBtn');
+  const skipBtn    = document.getElementById('skipBtn');
+  let unlocked = false;
+
+  function openModal() {
+    pinInput.value = '';
+    pinError.textContent = '';
+    pinOverlay.classList.add('show');
+    setTimeout(() => pinInput.focus(), 50);
+  }
+
+  function closeModal() {
+    pinOverlay.classList.remove('show');
+  }
+
+  function setUnlocked(state) {
+    unlocked              = state;
+    lockBtn.textContent   = state ? '🔓' : '🔒';
+    lockBtn.title         = state ? 'Lock cheat mode' : 'Unlock cheat mode';
+    skipBtn.style.display = state ? '' : 'none';
+  }
+
+  lockBtn.addEventListener('click', () => {
+    if (unlocked) { setUnlocked(false); return; }
+    openModal();
+  });
+
+  pinForm.addEventListener('submit', e => {
+    e.preventDefault();
+    if (pinInput.value === SECRET) {
+      setUnlocked(true);
+      closeModal();
+    } else {
+      pinError.textContent = 'Wrong PIN!';
+      pinInput.value = '';
+      pinInput.classList.add('pin-shake');
+      pinInput.addEventListener('animationend', () => pinInput.classList.remove('pin-shake'), { once: true });
+    }
+  });
+
+  pinClose.addEventListener('click', closeModal);
+
+  skipBtn.addEventListener('click', () => {
+    if (!unlocked || moving || gameOver) return;
+    if (curNode >= PATH.length - 1) return;
+    const from = curNode;
+    curNode++;
+    startMove(from, curNode);
+  });
+})();
 
 // ─── Boot ─────────────────────────────────────────────────────────────
 window.addEventListener('resize', () => {
