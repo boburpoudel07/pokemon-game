@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose Your Game</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0f0f1a;
+    font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
+  }
+
+  /* starfield */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 15%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 80%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 60%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 45%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 90%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 75%, #fff 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 55%, #fff 0%, transparent 100%);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  h1 {
+    color: #fff;
+    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    opacity: 0.85;
+  }
+
+  .cards {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .card {
+    position: relative;
+    width: 260px;
+    height: 320px;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    transform: translateY(-8px) scale(1.03);
+  }
+
+  /* Food card */
+  .card-food {
+    background: linear-gradient(145deg, #1e3a5f, #0d2035);
+    box-shadow: 0 8px 40px rgba(80, 160, 255, 0.3);
+    border: 1.5px solid rgba(80, 160, 255, 0.25);
+  }
+  .card-food:hover {
+    box-shadow: 0 16px 60px rgba(80, 160, 255, 0.5);
+  }
+
+  /* Math card */
+  .card-math {
+    background: linear-gradient(145deg, #1f3a1f, #0a1a0a);
+    box-shadow: 0 8px 40px rgba(50, 160, 50, 0.25);
+    border: 1.5px solid rgba(80, 200, 80, 0.2);
+  }
+  .card-math:hover {
+    box-shadow: 0 16px 60px rgba(50, 200, 50, 0.4);
+  }
+
+  .card-icon {
+    font-size: 5rem;
+    line-height: 1;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+
+  .card-label {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #fff;
+  }
+
+  .card-sub {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* glow ring on food card */
+  .card-food::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 26px;
+    background: conic-gradient(from 0deg, #4fc3f7, #1565c0, #4fc3f7);
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card-food:hover::after {
+    opacity: 0.35;
+    animation: spin 3s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+    .cards { gap: 1.2rem; }
+    .card { width: 220px; height: 270px; }
+    .card-icon { font-size: 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Pick a Game</h1>
+
+<div class="cards">
+  <a class="card card-food" href="spoon-game/index.html">
+    <div class="card-icon">🥄</div>
+    <div class="card-label">Food</div>
+    <div class="card-sub">Pokémon Spoon Eater</div>
+  </a>
+
+  <a class="card card-math" href="math-game/index.html">
+    <div class="card-icon">➗</div>
+    <div class="card-label">Math</div>
+    <div class="card-sub">Pokémon Map Adventure</div>
+  </a>
+</div>
+
+</body>
+</html>
